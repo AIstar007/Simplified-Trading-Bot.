@@ -12,7 +12,6 @@ A Python-based trading bot for Binance Futures with a modern web interface that 
 ## 📋 Table of Contents
 
 - [Features](#-features)
-- [Screenshots](#-screenshots)
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
