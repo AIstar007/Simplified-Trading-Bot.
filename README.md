@@ -874,18 +874,9 @@ copies or substantial portions of the Software.
 
 ---
 
-## 👥 Community
-
-- **GitHub**: [github.com/yourusername/trading-bot-desktop](https://github.com/yourusername/trading-bot-desktop)
-- **Discord**: [Join our Discord server](https://discord.gg/trading-bot)
-- **Reddit**: [r/TradingBotDesktop](https://reddit.com/r/TradingBotDesktop)
-- **Twitter**: [@TradingBotApp](https://twitter.com/TradingBotApp)
-
----
-
 <div align="center">
 
-**Built with ❤️ by the Trading Bot Desktop Team**
+**Built By Me**
 
 *Happy Trading! 🚀*
 
