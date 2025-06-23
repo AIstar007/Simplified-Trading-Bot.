@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀Trading Bot</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .price-up { color: #00d4aa; }
+        .price-down { color: #f6465d; }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .chart-section {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .export-CSV {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #00d4aa, #02c8a2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .export-CSV:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4aa, #02c8a2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid #333;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: rgba(20, 20, 20, 0.8);
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00d4aa;
+            box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.2);
+        }
+
+        .order-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-buy {
+            background: linear-gradient(45deg, #00d4aa, #02c8a2);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-sell {
+            background: linear-gradient(45deg, #f6465d, #e53e3e);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buy:hover, .btn-sell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .order-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(0, 212, 170, 0.2);
+            border: 1px solid #00d4aa;
+            color: #00d4aa;
+        }
+
+        .status-error {
+            background: rgba(246, 70, 93, 0.2);
+            border: 1px solid #f6465d;
+            color: #f6465d;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+            font-size: 12px;
+        }
+
+        .history-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-container {
+            height: 400px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .price-ticker {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ticker-price {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .ticker-change {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .positive { 
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+        }
+
+        .negative {
+            background: rgba(246, 70, 93, 0.2);
+            color: #f6465d;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-top: 2px solid #00d4aa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(0, 212, 170, 0.5); }
+            to { box-shadow: 0 0 20px rgba(0, 212, 170, 0.8); }
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                grid-row: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            Trading Bot
+        </div>
+        <div class="nav-stats">
+            <div class="stat-item">
+                <div class="stat-label">24h Volume</div>
+                <div class="stat-value" id="volume">Loading...</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">24h Change</div>
+                <div class="stat-value" id="change">Loading...</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Status</div>
+                <div class="stat-value price-up">
+                    <i class="fas fa-circle" style="font-size: 8px;"></i> Online
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="chart-section">
+            <div class="price-ticker">
+                <div class="ticker-price price-up" id="current-price">$101,709.60</div>
+                <div class="ticker-change positive" id="price-change">
+                    <i class="fas fa-arrow-up"></i> +0.72%
+                </div>
+                <div style="margin-left: auto; color: #888; font-size: 14px;">
+                    Last updated: <span id="last-update">--:--:--</span>
+                </div>
+            </div>
+
+            <button id="exportCSV" class="export-CSV">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+
+            <div class="chart-header">
+                <div class="chart-title">
+                    <i class="fas fa-chart-candlestick"></i>
+                    BTC/USDT Live Chart
+                </div>
+                <div class="chart-controls">
+                    <button class="btn btn-secondary" onclick="toggleChartType()">
+                        <i class="fas fa-exchange-alt"></i> Toggle View
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshChart()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="chart-container" id="main-chart"></div>
+
+            <div class="chart-container" id="volume-chart" style="height: 200px;"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-plus-circle"></i>
+                    Place Order
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Symbol</label>
+                    <select class="form-control" id="symbol">
+                        <option value="BTCUSDT">BTC/USDT</option>
+                        <option value="ETHUSDT">ETH/USDT</option>
+                        <option value="BNBUSDT">BNB/USDT</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Order Type</label>
+                    <select class="form-control" id="order_type" onchange="toggleOrderFields()">
+                        <option value="MARKET">Market</option>
+                        <option value="LIMIT">Limit</option>
+                        <option value="STOP_MARKET">Stop Market</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" step="0.001" class="form-control" id="quantity" placeholder="0.001">
+                </div>
+
+                <div class="form-group" id="price-field" style="display: none;">
+                    <label class="form-label">Price (USDT)</label>
+                    <input type="number" step="0.01" class="form-control" id="price" placeholder="0.00">
+                </div>
+
+                <div class="form-group" id="stop-price-field" style="display: none;">
+                    <label class="form-label">Stop Price (USDT)</label>
+                    <input type="number" step="0.01" class="form-control" id="stop_price" placeholder="0.00">
+                </div>
+
+                <div class="order-buttons">
+                    <button class="btn-buy" onclick="submitOrder('BUY')">
+                        <i class="fas fa-arrow-up"></i> BUY
+                    </button>
+                    <button class="btn-sell" onclick="submitOrder('SELL')">
+                        <i class="fas fa-arrow-down"></i> SELL
+                    </button>
+                </div>
+
+                <div id="order-status" class="order-status"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i>
+                    Order History
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Side</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #888;">No orders yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-wallet"></i>
+                    Portfolio
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>USDT Balance:</span>
+                    <span class="price-up">$10,000.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>BTC Balance:</span>
+                    <span class="price-up">0.0000 BTC</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Total Value:</span>
+                    <span class="price-up">$10,000.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentChartType = 'candlestick';
+        let priceData = [];
+        let isConnected = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadOrderHistory();
+            setInterval(updateData, 5000);
+        });
+
+        // CSV Export Logic
+        document.getElementById("exportCSV").addEventListener("click", function () {
+            if (!priceData || priceData.length === 0) {
+                alert("No data to export!");
+                return;
+            }
+            
+            let csv = "Time,Open,High,Low,Close,Volume\n";
+            priceData.forEach(row => {
+                csv += `${new Date(row.time).toISOString()},${row.open},${row.high},${row.low},${row.close},${row.volume}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "price_data.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Initialize the app
+        function initializeApp() {
+            // Since we don't have a real API, generate demo data
+            priceData = generateChartData();
+            renderChart();
+            updatePriceTicker();
+            updateLastUpdateTime();
+            isConnected = true;
+        }
+
+        function toggleOrderFields() {
+            const orderType = document.getElementById('order_type').value;
+            const priceField = document.getElementById('price-field');
+            const stopPriceField = document.getElementById('stop-price-field');
+
+            priceField.style.display = orderType === 'LIMIT' ? 'block' : 'none';
+            stopPriceField.style.display = orderType === 'STOP_MARKET' ? 'block' : 'none';
+        }
+
+        function generateChartData() {
+            const data = [];
+            let price = 101709.60;
+            const now = Date.now();
+            
+            for (let i = 99; i >= 0; i--) {
+                const time = now - (i * 60000); // 1 minute intervals
+                const change = (Math.random() - 0.5) * 200;
+                price += change;
+                
+                const open = price;
+                const close = price + (Math.random() - 0.5) * 100;
+                const high = Math.max(open, close) + Math.random() * 50;
+                const low = Math.min(open, close) - Math.random() * 50;
+                const volume = Math.random() * 1000 + 500;
+                
+                data.push({
+                    time: time,
+                    open: open,
+                    high: high,
+                    low: low,
+                    close: close,
+                    volume: volume
+                });
+                
+                price = close;
+            }
+            
+            return data;
+        }
+
+        function renderChart() {
+            if (!priceData || priceData.length === 0) return;
+            
+            const times = priceData.map(d => new Date(d.time));
+            
+            // Main price chart
+            const priceTrace = currentChartType === 'candlestick' ? {
+                x: times,
+                open: priceData.map(d => d.open),
+                high: priceData.map(d => d.high),
+                low: priceData.map(d => d.low),
+                close: priceData.map(d => d.close),
+                type: 'candlestick',
+                increasing: { line: { color: '#00d4aa' } },
+                decreasing: { line: { color: '#f6465d' } },
+                name: 'BTC/USDT'
+            } : {
+                x: times,
+                y: priceData.map(d => d.close),
+                mode: 'lines',
+                line: { color: '#00d4aa', width: 2 },
+                name: 'Price'
+            };
+
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Segoe UI' },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+                xaxis: { 
+                    rangeslider: { visible: false },
+                    gridcolor: '#333',
+                    showgrid: true,
+                    type: 'date'
+                },
+                yaxis: { 
+                    fixedrange: false,
+                    gridcolor: '#333',
+                    showgrid: true
+                },
+                showlegend: false
+            };
+
+            Plotly.newPlot('main-chart', [priceTrace], layout, {responsive: true});
+
+            // Volume chart
+            const volumeTrace = {
+                x: times,
+                y: priceData.map(d => d.volume),
+                type: 'bar',
+                marker: { color: '#00d4aa', opacity: 0.7 },
+                name: 'Volume'
+            };
+
+            const volumeLayout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Segoe UI' },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+                xaxis: { gridcolor: '#333', showgrid: true },
+                yaxis: { gridcolor: '#333', showgrid: true },
+                showlegend: false
+            };
+
+            Plotly.newPlot('volume-chart', [volumeTrace], volumeLayout, {responsive: true});
+        }
+
+        function updatePriceTicker() {
+            if (!priceData || priceData.length === 0) return;
+            
+            const latest = priceData[priceData.length - 1];
+            const previous = priceData[priceData.length - 2] || latest;
+            
+            const price = latest.close.toFixed(2);
+            const change = ((latest.close - previous.close) / previous.close * 100).toFixed(2);
+            
+            document.getElementById('current-price').textContent = `$${price}`;
+            
+            const changeElement = document.getElementById('price-change');
+            const isPositive = parseFloat(change) >= 0;
+            
+            changeElement.className = `ticker-change ${isPositive ? 'positive' : 'negative'}`;
+            changeElement.innerHTML = `
+                <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i> 
+                ${isPositive ? '+' : ''}${change}%
+            `;
+            
+            // Update nav stats
+            document.getElementById('volume').textContent = `${(latest.volume * latest.close / 1000000).toFixed(1)}M`;
+            document.getElementById('change').textContent = `${isPositive ? '+' : ''}${change}%`;
+        }
+
+        function toggleChartType() {
+            currentChartType = currentChartType === 'candlestick' ? 'line' : 'candlestick';
+            renderChart();
+        }
+
+        function refreshChart() {
+            const button = event.target.closest('button');
+            button.classList.add('glow');
+            
+            // Generate new data
+            priceData = generateChartData();
+            renderChart();
+            updatePriceTicker();
+            updateLastUpdateTime();
+            
+            setTimeout(() => button.classList.remove('glow'), 2000);
+        }
+
+        async function submitOrder(side) {
+            const orderData = {
+                symbol: document.getElementById('symbol').value,
+                side: side,
+                order_type: document.getElementById('order_type').value,
+                quantity: parseFloat(document.getElementById('quantity').value),
+                price: parseFloat(document.getElementById('price').value) || null,
+                stop_price: parseFloat(document.getElementById('stop_price').value) || null
+            };
+
+            // Validate input
+            if (!orderData.quantity || orderData.quantity <= 0) {
+                showOrderStatus('Please enter a valid quantity', 'error');
+                return;
+            }
+
+            try {
+                // Simulate order placement for demo
+                await simulateOrderPlacement(orderData);
+                
+                showOrderStatus(`${side} order placed successfully!`, 'success');
+                addToOrderHistory(orderData);
+                clearOrderForm();
+                
+            } catch (error) {
+                showOrderStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function simulateOrderPlacement(orderData) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (Math.random() > 0.1) { // 90% success rate
+                        resolve({ status: 'filled', orderId: Date.now() });
+                    } else {
+                        reject(new Error('Insufficient balance'));
+                    }
+                }, 1000);
+            });
+        }
+
+        function showOrderStatus(message, type) {
+            const statusDiv = document.getElementById('order-status');
+            statusDiv.textContent = message;
+            statusDiv.className = `order-status status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function addToOrderHistory(orderData) {
+            const tbody = document.getElementById('history-tbody');
+            
+            // Remove "no orders" message
+            if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+                tbody.innerHTML = '';
+            }
+            
+            const row = document.createElement('tr');
+            const currentPrice = priceData[priceData.length - 1].close.toFixed(2);
+            row.innerHTML = `
+                <td>${new Date().toLocaleTimeString()}</td>
+                <td><span class="${orderData.side === 'BUY' ? 'price-up' : 'price-down'}">${orderData.side}</span></td>
+                <td>${orderData.quantity}</td>
+                <td>$${orderData.price || currentPrice}</td>
+                <td><span class="price-up">Filled</span></td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Keep only last 10 orders
+            while (tbody.children.length > 10) {
+                tbody.removeChild(tbody.lastChild);
+            }
+        }
+
+        function clearOrderForm() {
+            document.getElementById('quantity').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('stop_price').value = '';
+        }
+
+        function loadOrderHistory() {
+            // This would typically load from your backend
+            console.log('Loading order history...');
+        }
+
+        function updateData() {
+            if (isConnected) {
+                // Generate new data point
+                const lastPrice = priceData[priceData.length - 1];
+                const change = (Math.random() - 0.5) * 100;
+                const newPrice = lastPrice.close + change;
+                
+                const newDataPoint = {
+                    time: Date.now(),
+                    open: lastPrice.close,
+                    high: Math.max(lastPrice.close, newPrice) + Math.random() * 25,
+                    low: Math.min(lastPrice.close, newPrice) - Math.random() * 25,
+                    close: newPrice,
+                    volume: Math.random() * 1000 + 500
+                };
+                
+                priceData.push(newDataPoint);
+                
+                // Keep only last 100 data points
+                if (priceData.length > 100) {
+                    priceData.shift();
+                }
+                
+                renderChart();
+                updatePriceTicker();
+                updateLastUpdateTime();
+            }
+        }
+
+        function updateLastUpdateTime() {
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+
+        function showError(message) {
+            console.error(message);
+            // Could show a toast notification here
+        }
+    </script>
+</body>
+</html>
