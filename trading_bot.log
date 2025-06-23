@@ -1,0 +1,14 @@
+2025-06-24 04:47:18,915 - INFO - Binance Futures client initialized.
+2025-06-24 04:47:19,029 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-24 04:47:19,029 - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 04:47:19,037 - INFO - 127.0.0.1 - - [24/Jun/2025 04:47:19] "GET / HTTP/1.1" 200 -
+2025-06-24 04:47:20,186 - INFO - 127.0.0.1 - - [24/Jun/2025 04:47:20] "GET / HTTP/1.1" 200 -
+2025-06-24 04:47:20,765 - INFO - 127.0.0.1 - - [24/Jun/2025 04:47:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-24 04:49:51,857 - INFO - Binance Futures client initialized.
+2025-06-24 04:49:51,992 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-24 04:49:51,992 - INFO - [33mPress CTRL+C to quit[0m
+2025-06-24 04:49:51,999 - INFO - 127.0.0.1 - - [24/Jun/2025 04:49:51] "GET / HTTP/1.1" 200 -
+2025-06-24 04:49:53,107 - INFO - 127.0.0.1 - - [24/Jun/2025 04:49:53] "GET / HTTP/1.1" 200 -
+2025-06-24 04:49:53,691 - INFO - 127.0.0.1 - - [24/Jun/2025 04:49:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -

@@ -1,0 +1,1 @@
+timestamp,order_id,symbol,side,type,quantity,price,stop_price,status,time_in_force,commission,commission_asset,executed_qty,fills

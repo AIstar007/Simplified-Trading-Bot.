@@ -1,0 +1,10 @@
+Flask
+Flask-CORS
+requests
+python-dotenv
+gunicorn
+Pillow
+pystray
+plyer
+webview
+python-binance
